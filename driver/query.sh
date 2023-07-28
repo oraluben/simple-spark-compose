@@ -7,7 +7,7 @@ import com.databricks.spark.sql.perf.tpcds.TPCDS
 val sqlContext = spark.sqlContext
 val tpcds = new TPCDS(sqlContext)
 
-val databaseName = "tpcds10g" 
+val databaseName = "tpcds1g"
 sql(s"use \$databaseName")
 
 val resultLocation = "/opt/spark-data/results"

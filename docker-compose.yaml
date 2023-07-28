@@ -49,7 +49,8 @@ services:
     command: bash -c '
       while ping -c1 tpcds-builder &>/dev/null; do sleep 1; done;
       echo "build finished" &&
-      sh /prepare.sh'
+      sh /prepare.sh &&
+      sh /query.sh'
     depends_on:
       - tpcds-builder
     volumes:

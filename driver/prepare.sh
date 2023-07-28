@@ -1,4 +1,4 @@
-rm -rf /opt/spark/spark-data/data
+rm -rf /opt/spark-data/data
 
 cat << EOF | /opt/spark/bin/spark-shell \
     --jars /opt/spark-apps/spark-sql-perf_2.12-0.5.1-SNAPSHOT.jar \
@@ -8,9 +8,9 @@ import com.databricks.spark.sql.perf.tpcds.TPCDSTables
 
 val rootDir = "/opt/spark-data/data"
 val dsdgenDir = "/opt/spark-data/tpcds-kit/tools"
-val scaleFactor = "10"
+val scaleFactor = "1"
 val format = "parquet"
-val databaseName = "tpcds10g"
+val databaseName = "tpcds1g"
 val sqlContext = spark.sqlContext
 
 val tables = new TPCDSTables(sqlContext,
@@ -40,4 +40,3 @@ tables.createExternalTables(rootDir,
 tables.analyzeTables(databaseName, analyzeColumns = true)
 
 EOF
-
