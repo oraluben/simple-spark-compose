@@ -1,0 +1,60 @@
+version: "3.3"
+services:
+  spark-master:
+    image: oraluben/spark:3.3.4-a3-java8
+    networks:
+      - spark_net
+    ports:
+      - "9090:8080"
+    volumes:
+       - ./apps:/opt/spark-apps
+       - ./data:/opt/spark-data
+    environment:
+      - SPARK_NO_DAEMONIZE=true
+    command: /opt/spark/sbin/start-master.sh
+
+  # docker-compose up -d --scale spark-worker=3
+  spark-worker:
+    image: oraluben/spark:3.3.4-a3-java8
+    networks:
+      - spark_net
+    # ports:
+    #   - "9091:8081"
+    #   - "7001:7000"
+    depends_on:
+      - spark-master
+    environment:
+      - SPARK_NO_DAEMONIZE=true
+    volumes:
+       - ./apps:/opt/spark-apps
+       - ./data:/opt/spark-data
+    command: /opt/spark/sbin/start-worker.sh spark://spark-master:7077
+
+  # https://github.com/gregrahn/tpcds-kit/issues/57
+  tpcds-builder:
+    image: openanolis-registry.cn-hangzhou.cr.aliyuncs.com/openanolis/anolisos
+    networks:
+      - spark_net
+    command: bash -c "
+      yum install -y gcc make flex bison byacc &&
+      (cd /opt/spark-data/tpcds-kit/tools && make clean && make OS=LINUX -j)"
+    volumes:
+       - ./apps:/opt/spark-apps
+       - ./data:/opt/spark-data
+
+  driver:
+    build: driver
+    networks:
+      - spark_net
+    command: bash -c '
+      while ping -c1 tpcds-builder &>/dev/null; do sleep 1; done;
+      echo "build finished" &&
+      sh /prepare.sh'
+    depends_on:
+      - tpcds-builder
+    volumes:
+       - ./apps:/opt/spark-apps
+       - ./data:/opt/spark-data
+
+networks:
+  spark_net:

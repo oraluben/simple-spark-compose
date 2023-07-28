@@ -1,0 +1,3 @@
+[submodule "data/tpcds-kit"]
+	path = data/tpcds-kit
+	url = git@github.com:oraluben/tpcds-kit.git
